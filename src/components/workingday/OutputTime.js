@@ -1,8 +1,14 @@
 import React from 'react';
 import OutputTable from './OutputTable';
-import {Link} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux'
+import { firestoreConnect } from 'react-redux-firebase'
+import { compose } from 'redux';
 
-const OutputTime = ({works}) => {
+
+const OutputTime = (props) => {
+    const { auth , works } = props;
+        if (!auth.uid) return <Redirect to='/signin' /> 
     return (
         <div className ="card z-depth-0 project-summary">
             <div className="card-content text-darken-3">
@@ -10,9 +16,7 @@ const OutputTime = ({works}) => {
                 <div className="card-action">
                     { works && works.map(work => {
                         return (
-                            <Link to={"/" + work.id}>
-                            <OutputTable work={work} key={work.id}/>
-                            </Link>
+                            <OutputTable work={work}/>
                         )
                     })
                         
@@ -23,4 +27,15 @@ const OutputTime = ({works}) => {
     )
 }
 
-export default OutputTime;
+const mapStateToProps = (state) => {
+    return {
+      auth: state.firebase.auth
+    }
+  }
+
+  export default compose(
+    connect(mapStateToProps),
+    firestoreConnect([{
+      collection: 'works'
+    }])
+  )(OutputTime)

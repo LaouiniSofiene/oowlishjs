@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { createWork } from '../../store/actions/workActions';
+import { createWork, endWork, startBreak, endBreak } from '../../store/actions/workActions';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+
 
 class InputTime extends Component {
 
@@ -16,40 +18,24 @@ class InputTime extends Component {
     }
 
     handleExitWork = (e) =>{
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         e.preventDefault();
-        this.setState({
-            exitTime : time
-
-        });
-        console.log(this.state);
+        this.props.endWork(this.state);
     }
 
     handleStartBreak = (e) =>{
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         e.preventDefault();
-        this.setState({
-            BreakStart : time
-
-        });
-        console.log(this.state);
+        this.props.startBreak(this.state);
     }
 
     handleEndBreak = (e) =>{
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         e.preventDefault();
-        this.setState({
-            BreakEnd : time
-
-        });
-        console.log(this.state);
+        this.props.endBreak(this.state);
     }
 
 
     render(){
+        const { auth ,works } = this.props;
+        if (!auth.uid) return <Redirect to='/signin' /> 
     return (
         <div className ="card z-depth-0 project-summary">
             <div className="card-content grey-text text-darken-3">
@@ -73,10 +59,20 @@ class InputTime extends Component {
     )
 }
 }
-const mapDispatchProps = (dispatch) => {
+
+const mapStateToProps = (state) => {
     return {
-        createWork: (work) => dispatch(createWork(work))
+      auth: state.firebase.auth
     }
 }
 
-export default connect(null, mapDispatchProps)(InputTime);
+const mapDispatchProps = (dispatch) => {
+    return {
+        createWork: (work) => dispatch(createWork(work)),
+        endWork: (work) => dispatch(endWork(work)),
+        startBreak: (work) => dispatch(startBreak(work)),
+        endBreak: (work) => dispatch(endBreak(work))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchProps)(InputTime);

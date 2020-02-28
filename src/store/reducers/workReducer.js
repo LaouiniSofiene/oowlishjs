@@ -13,6 +13,24 @@ const workReducer = (state = initState, action) => {
         case 'CREATE_WORK_ERROR':
             console.log('created work error', action.console.err);
             return state;
+        case 'END_WORK':
+            console.log('Ended work', action.work);
+            return state;
+        case 'END_WORK_ERROR':
+            console.log('Eended work error', action.console.err);
+            return state;
+        case 'START_BREAK':
+            console.log('Started Break', action.work);
+            return state;
+        case 'START_BREAK_ERROR':
+            console.log('Started Break error', action.console.err);
+            return state;
+        case 'END_BREAK':
+            console.log('Ended Break', action.work);
+            return state;
+        case 'END_BREAK_ERROR':
+            console.log('Ended Break error', action.console.err);
+            return state;
         default: 
             return state;
     }

@@ -4,21 +4,41 @@ import InputTime from '../workingday/InputTime';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
-
+import { db } from '../../config/fbConfig';
+import { Redirect } from 'react-router-dom';
 
 class Dashboard extends Component {
+
+    state = {
+        works: null
+    }
+
+    componentDidMount(){
+        const {auth} = this.props;
+        console.log('mounted');
+        db.collection('works')
+        .doc(auth.uid)
+        .get()
+        .then( doc => {
+            const works =[];
+            const data = doc.data();
+            works.push(data);
+            this.setState({ works : works});
+            console.log(works);
+        })
+        .catch( error => console.log(error))
+    }
     render(){
-        const { works } = this.props;
-
-
+        const {auth} = this.props;
+        if (!auth.uid) return <Redirect to='/signin' /> 
         return(
             <div className="dashboard container">
                 <div className="row">
                     <div className="col s12 m6">
-                        <InputTime works={works}/>
+                        <InputTime works={this.state.works}/>
                     </div>
                     <div className="col s12 m5 offset-m1">
-                        <OutputTime works={works}/>
+                        <OutputTime works={this.state.works}/>
                     </div>
                 </div>
             </div>
@@ -27,9 +47,9 @@ class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
         return{
-            works: state.work.works
+            works: state.work.works,
+            auth: state.firebase.auth
         }
     
 }
